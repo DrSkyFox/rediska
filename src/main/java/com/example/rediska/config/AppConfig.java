@@ -13,6 +13,8 @@ import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.data.redis.core.ReactiveRedisOperations;
 import org.springframework.data.redis.core.ReactiveRedisTemplate;
+import org.springframework.data.redis.listener.ChannelTopic;
+import org.springframework.data.redis.listener.ReactiveRedisMessageListenerContainer;
 import org.springframework.data.redis.serializer.*;
 
 @Configuration
@@ -27,9 +29,15 @@ public class AppConfig {
     @Value("${spring.redis.password}")
     private String redisPassword;
 
+    @Value("${spring.redis.chanelTopic}")
+    private String chanelTopic;
+
+
+
     @Bean
     public LettuceConnectionFactory lettuceConnectionFactory() {
         RedisStandaloneConfiguration redisStandaloneConfig = new RedisStandaloneConfiguration();
+        redisStandaloneConfig = new RedisStandaloneConfiguration();
         redisStandaloneConfig.setHostName(redisHost);
         redisStandaloneConfig.setPort(redisPort);
         redisStandaloneConfig.setPassword(redisPassword);
@@ -87,5 +95,14 @@ public class AppConfig {
 
     public RedisSerializer<Transfer> transferRedisSerializer() {
         return new GenericToStringSerializer<>(Transfer.class);
+    }
+    //---------------- SUBSCRIBE ---------------
+    @Bean
+    public ReactiveRedisMessageListenerContainer container(LettuceConnectionFactory factory) {
+        return new ReactiveRedisMessageListenerContainer(factory);
+    }
+    @Bean
+    public ChannelTopic channelTopic() {
+        return ChannelTopic.of(chanelTopic);
     }
 }

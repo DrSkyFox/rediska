@@ -3,3 +3,4 @@ spring:
     host: "localhost"
     port: 6379
     password: "passwd"
+    chanelTopic: "transfer"
